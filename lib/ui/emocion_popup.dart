@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../game/entidades/emocion_data.dart';
 
 class EmocionPopup extends StatelessWidget {
@@ -30,7 +31,7 @@ class EmocionPopup extends StatelessWidget {
               // Nombre de la emoción
               Text(
                 data.nombre,
-                style: const TextStyle(
+                style: GoogleFonts.pixelifySans(
                   color: Color(0xFFe0aaff),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -43,7 +44,7 @@ class EmocionPopup extends StatelessWidget {
               Text(
                 data.descripcion,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.pixelifySans(
                   color: Colors.white70,
                   fontSize: 14,
                   height: 1.5,
@@ -55,7 +56,7 @@ class EmocionPopup extends StatelessWidget {
               Text(
                 data.pregunta,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.pixelifySans(
                   color: Color(0xFFc77dff),
                   fontSize: 15,
                   fontStyle: FontStyle.italic,
@@ -115,7 +116,7 @@ class _BotonRespuesta extends StatelessWidget {
         child: Text(
           texto,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: GoogleFonts.pixelifySans(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,

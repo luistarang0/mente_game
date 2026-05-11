@@ -4,15 +4,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/game.dart';
 import 'emocion_data.dart';
 
-class Emocion extends SpriteComponent with HasGameRef, CollisionCallbacks {
+class Emocion extends SpriteAnimationComponent with HasGameRef, CollisionCallbacks {
   final EmocionData data;
   final bool esFusion;
   bool recolectada = false;
   bool explorada = false;
 
-  /// Si se proporciona, se usa en vez de cargar [data.imagen].
-  /// Útil para emociones fusionadas cuyo sprite viene de un spritesheet.
-  final Sprite? spriteOverride;
+  final SpriteAnimation? animatioOverride;
 
   // Callback que se dispara cuando el jugador toca la emoción
   final void Function(EmocionData, Emocion) onContacto;
@@ -21,7 +19,7 @@ class Emocion extends SpriteComponent with HasGameRef, CollisionCallbacks {
     required this.data,
     required Vector2 posicion,
     required this.onContacto,
-    this.spriteOverride,
+    this.animatioOverride,
     this.esFusion = false,
   }) {
     position = posicion;
@@ -33,10 +31,28 @@ class Emocion extends SpriteComponent with HasGameRef, CollisionCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    if (spriteOverride != null) {
-      sprite = spriteOverride;
+    if (animatioOverride != null) {
+      animation = animatioOverride;
+    } else if (data.esPrimaria){
+      final sheet = await gameRef.images.load(data.imagen);
+      animation = SpriteAnimation.fromFrameData(
+        sheet,
+        SpriteAnimationData.sequenced(
+            amount: data.frameCount,
+            stepTime: data.stepTime,
+            textureSize: data.textureSize ?? Vector2(32, 32),
+        ),
+      );
     } else {
-      sprite = await gameRef.loadSprite(data.imagen);
+      final sheet = await gameRef.images.load(data.imagen);
+      animation = SpriteAnimation.fromFrameData(
+        sheet,
+        SpriteAnimationData.sequenced(
+            amount: 1,
+            stepTime: 1.0,
+            textureSize: data.textureSize ?? Vector2.all(32),
+        ),
+      );
     }
 
     add(CircleHitbox(radius: 16, anchor: Anchor.center, position: size / 2));

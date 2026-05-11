@@ -6,11 +6,7 @@ class EmocionFusionadaData {
   final String pregunta;
   final TipoEmocion componente1;
   final TipoEmocion componente2;
-
-  /// Posición en el spritesheet EMO_COMB.png (columna, fila), cada celda 32×32.
-  /// -1 indica que esta fusión no tiene sprite en el spritesheet.
-  final int spritesheetCol;
-  final int spritesheetRow;
+  final String imagen;
 
   const EmocionFusionadaData({
     required this.nombre,
@@ -18,11 +14,8 @@ class EmocionFusionadaData {
     required this.pregunta,
     required this.componente1,
     required this.componente2,
-    this.spritesheetCol = -1,
-    this.spritesheetRow = -1,
+    this.imagen = '',
   });
-
-  bool get tieneSprite => spritesheetCol >= 0;
 
   /// Devuelve true si las dos emociones primarias (en cualquier orden)
   /// producen esta fusión.
@@ -38,19 +31,12 @@ class EmocionFusionadaData {
         descripcion: descripcion,
         pregunta: pregunta,
         imagen: '',
-        hojaSprite:
-            tieneSprite ? 'EMO_COMB.png:$spritesheetCol:$spritesheetRow' : '',
-        iniciales: tieneSprite
-            ? ''
-            : nombre.substring(0, nombre.length.clamp(0, 3)).toUpperCase(),
+        esPrimaria: false,
+        frameCount: 1,
+        stepTime: 1.0,
       );
 }
 
-/// Catálogo completo de 28 fusiones emocionales (Rueda de Plutchik).
-///
-/// Spritesheet EMO_COMB.png (5 columnas × 2 filas, 32×32 px):
-///   Fila 0: Ansiedad · Quedarse Helado · Mal Humor · Orgullo · Catarsis
-///   Fila 1: Vergüenza · Culpabilidad · Agresividad · Pesimismo · Optimismo
 const List<EmocionFusionadaData> catalogoFusiones = [
   // ── Con sprite (fila 0) ──────────────────────────────────────
   EmocionFusionadaData(
@@ -61,8 +47,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido ansiedad o nerviosismo recientemente?',
     componente1: TipoEmocion.miedo,
     componente2: TipoEmocion.anticipacion,
-    spritesheetCol: 0,
-    spritesheetRow: 0,
+    imagen: 'ansiedad.png',
   ),
   EmocionFusionadaData(
     nombre: 'Quedarse Helado',
@@ -72,8 +57,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Te has sentido paralizado o bloqueado ante alguna situación?',
     componente1: TipoEmocion.ira,
     componente2: TipoEmocion.miedo,
-    spritesheetCol: 1,
-    spritesheetRow: 0,
+    imagen: 'helado.png',
   ),
   EmocionFusionadaData(
     nombre: 'Mal Humor',
@@ -83,8 +67,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has tenido episodios de mal humor o irritabilidad profunda?',
     componente1: TipoEmocion.tristeza,
     componente2: TipoEmocion.ira,
-    spritesheetCol: 2,
-    spritesheetRow: 0,
+    imagen: 'mal_humor.png',
   ),
   EmocionFusionadaData(
     nombre: 'Orgullo',
@@ -94,8 +77,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido orgullo por algo que hiciste o lograste?',
     componente1: TipoEmocion.ira,
     componente2: TipoEmocion.alegria,
-    spritesheetCol: 3,
-    spritesheetRow: 0,
+    imagen: 'orgullo.png',
   ),
   EmocionFusionadaData(
     nombre: 'Catarsis',
@@ -105,8 +87,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has experimentado una liberación emocional intensa?',
     componente1: TipoEmocion.alegria,
     componente2: TipoEmocion.tristeza,
-    spritesheetCol: 4,
-    spritesheetRow: 0,
+    imagen: 'catarsis.png',
   ),
 
   // ── Con sprite (fila 1) ──────────────────────────────────────
@@ -118,8 +99,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido vergüenza o timidez recientemente?',
     componente1: TipoEmocion.miedo,
     componente2: TipoEmocion.tristeza,
-    spritesheetCol: 0,
-    spritesheetRow: 1,
+    imagen: 'verguenza.png',
   ),
   EmocionFusionadaData(
     nombre: 'Culpabilidad',
@@ -129,8 +109,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido culpa por algo que hiciste o dejaste de hacer?',
     componente1: TipoEmocion.miedo,
     componente2: TipoEmocion.alegria,
-    spritesheetCol: 1,
-    spritesheetRow: 1,
+    imagen: 'culpabilidad.png',
   ),
   EmocionFusionadaData(
     nombre: 'Agresividad',
@@ -140,8 +119,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido impulsos agresivos o ganas de reaccionar con fuerza?',
     componente1: TipoEmocion.ira,
     componente2: TipoEmocion.anticipacion,
-    spritesheetCol: 2,
-    spritesheetRow: 1,
+    imagen: 'agresividad.png',
   ),
   EmocionFusionadaData(
     nombre: 'Pesimismo',
@@ -151,8 +129,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has tenido pensamientos pesimistas sobre el futuro?',
     componente1: TipoEmocion.anticipacion,
     componente2: TipoEmocion.tristeza,
-    spritesheetCol: 3,
-    spritesheetRow: 1,
+    imagen: 'pesimismo.png',
   ),
   EmocionFusionadaData(
     nombre: 'Optimismo',
@@ -162,8 +139,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido optimismo o esperanza por algo que viene?',
     componente1: TipoEmocion.anticipacion,
     componente2: TipoEmocion.alegria,
-    spritesheetCol: 4,
-    spritesheetRow: 1,
+    imagen: 'optimismo.png',
   ),
 
   // ── Sin sprite (18 nuevas) ───────────────────────────────────
@@ -175,6 +151,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido alarma o susto repentino ante algo inesperado?',
     componente1: TipoEmocion.miedo,
     componente2: TipoEmocion.sorpresa,
+    imagen: 'alarma.png',
   ),
   EmocionFusionadaData(
     nombre: 'Amor',
@@ -184,6 +161,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido amor o afecto profundo por alguien recientemente?',
     componente1: TipoEmocion.alegria,
     componente2: TipoEmocion.aceptacion,
+    imagen: 'amor.png',
   ),
   EmocionFusionadaData(
     nombre: 'Desprecio',
@@ -193,6 +171,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido desprecio o desdén hacia algo o alguien?',
     componente1: TipoEmocion.ira,
     componente2: TipoEmocion.aversion,
+    imagen: 'desprecio.png',
   ),
   EmocionFusionadaData(
     nombre: 'Decepción',
@@ -202,6 +181,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Te has sentido decepcionado/a por algo o alguien recientemente?',
     componente1: TipoEmocion.tristeza,
     componente2: TipoEmocion.sorpresa,
+    imagen: 'decepcion.png',
   ),
   EmocionFusionadaData(
     nombre: 'Miseria',
@@ -211,6 +191,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido una incomodidad o malestar emocional muy intenso?',
     componente1: TipoEmocion.tristeza,
     componente2: TipoEmocion.aversion,
+    imagen: 'miseria.png',
   ),
   EmocionFusionadaData(
     nombre: 'Curiosidad',
@@ -220,6 +201,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido curiosidad o ganas de explorar algo nuevo?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.sorpresa,
+    imagen: 'curiosidad.png',
   ),
   EmocionFusionadaData(
     nombre: 'Cinismo',
@@ -229,6 +211,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has tenido pensamientos cínicos o de desconfianza recientemente?',
     componente1: TipoEmocion.anticipacion,
     componente2: TipoEmocion.aversion,
+    imagen: 'cinismo.png',
   ),
   EmocionFusionadaData(
     nombre: 'Dominancia',
@@ -238,6 +221,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido la necesidad o el impulso de tomar el control?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.ira,
+    imagen: 'dominancia.png',
   ),
   EmocionFusionadaData(
     nombre: 'Sumisión',
@@ -247,6 +231,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Te has sentido sumiso/a o has cedido por miedo en alguna situación?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.miedo,
+    imagen: 'sumision.png',
   ),
   EmocionFusionadaData(
     nombre: 'Deleite',
@@ -256,6 +241,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido deleite o una alegría inesperada recientemente?',
     componente1: TipoEmocion.sorpresa,
     componente2: TipoEmocion.alegria,
+    imagen: 'deleite.png',
   ),
   EmocionFusionadaData(
     nombre: 'Repugnancia',
@@ -265,6 +251,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido repugnancia o rechazo intenso ante algo?',
     componente1: TipoEmocion.aversion,
     componente2: TipoEmocion.miedo,
+    imagen: 'repugnancia.png',
   ),
   EmocionFusionadaData(
     nombre: 'Sagacidad',
@@ -274,6 +261,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido que comprendes bien una situación y sabes cómo actuar?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.anticipacion,
+    imagen: 'sagacidad.png',
   ),
   EmocionFusionadaData(
     nombre: 'Susto',
@@ -283,6 +271,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has tenido un susto o sobresalto recientemente?',
     componente1: TipoEmocion.aversion,
     componente2: TipoEmocion.sorpresa,
+    imagen: 'susto.png',
   ),
   EmocionFusionadaData(
     nombre: 'Melancolía',
@@ -292,6 +281,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido melancolía o nostalgia recientemente?',
     componente1: TipoEmocion.alegria,
     componente2: TipoEmocion.aversion,
+    imagen: 'melancolia.png',
   ),
   EmocionFusionadaData(
     nombre: 'Resignación',
@@ -301,6 +291,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Te has resignado ante algo que no podías cambiar?',
     componente1: TipoEmocion.tristeza,
     componente2: TipoEmocion.aceptacion,
+    imagen: 'resignacion.png',
   ),
   EmocionFusionadaData(
     nombre: 'Rabia',
@@ -310,6 +301,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido rabia o enojo intenso de forma repentina?',
     componente1: TipoEmocion.sorpresa,
     componente2: TipoEmocion.ira,
+    imagen: 'rabia.png',
   ),
   EmocionFusionadaData(
     nombre: 'Ambivalencia',
@@ -319,6 +311,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Has sentido sentimientos contradictorios sobre algo o alguien?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.aversion,
+    imagen: 'ambivalencia.png',
   ),
   EmocionFusionadaData(
     nombre: 'Confusión',
@@ -328,6 +321,7 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     pregunta: '¿Te has sentido confundido/a o desorientado/a recientemente?',
     componente1: TipoEmocion.anticipacion,
     componente2: TipoEmocion.sorpresa,
+    imagen: 'confusion.png',
   ),
 ];
 

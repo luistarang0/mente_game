@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game/entidades/emocion_data.dart';
 import '../game/entidades/emocion_fusionada_data.dart';
-import 'spritesheet_cell.dart';
 
 // ── Funcion adaptativa de cada emocion primaria ──────────────────────────────
 const Map<TipoEmocion, String> _funciones = {
@@ -49,7 +48,7 @@ class SalaIntegracionScreen extends StatelessWidget {
   });
 
   List<EmocionData> get _primarias =>
-      emociones.where((e) => e.imagen.isNotEmpty).toList();
+      emociones.where((e) => e.esPrimaria).toList();
 
   bool get _sinEmociones => emociones.isEmpty;
 
@@ -331,28 +330,11 @@ class _EmocionChip extends StatelessWidget {
   }
 
   Widget _buildIcono() {
-    if (data.imagen.isNotEmpty) {
+    if (data.esPrimaria) {
       return Image.asset(
         'assets/images/${data.imagen}',
         filterQuality: FilterQuality.none,
         fit: BoxFit.contain,
-      );
-    }
-    if (data.hojaSprite.isNotEmpty) {
-      return SpritesheetCell(hoja: data.hojaSprite, size: _iconSize);
-    }
-    if (data.iniciales.isNotEmpty) {
-      return Container(
-        color: const Color(0xFF5a3d8a),
-        alignment: Alignment.center,
-        child: Text(
-          data.iniciales,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       );
     }
     return const Icon(Icons.auto_awesome, color: _accentLight, size: 22);
@@ -479,7 +461,7 @@ class _FuncionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final esPrimaria = data.imagen.isNotEmpty;
+    final esPrimaria = data.esPrimaria;
     final funcion = esPrimaria
         ? (_funciones[data.tipo] ?? data.descripcion)
         : data.descripcion;
@@ -529,28 +511,11 @@ class _FuncionItem extends StatelessWidget {
   }
 
   Widget _buildMiniIcono() {
-    if (data.imagen.isNotEmpty) {
+    if (data.esPrimaria) {
       return Image.asset(
         'assets/images/${data.imagen}',
         filterQuality: FilterQuality.none,
         fit: BoxFit.contain,
-      );
-    }
-    if (data.hojaSprite.isNotEmpty) {
-      return SpritesheetCell(hoja: data.hojaSprite, size: 36);
-    }
-    if (data.iniciales.isNotEmpty) {
-      return Container(
-        color: const Color(0xFF5a3d8a),
-        alignment: Alignment.center,
-        child: Text(
-          data.iniciales,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       );
     }
     return const Icon(Icons.auto_awesome, color: _accentLight, size: 18);

@@ -1,3 +1,5 @@
+import 'package:flame/components.dart';
+
 enum TipoEmocion {
   alegria,
   tristeza,
@@ -16,11 +18,11 @@ class EmocionData {
   final String pregunta;
   /// Nombre del archivo en assets/images/ (vacío si no aplica).
   final String imagen;
-  /// Para fusiones que usan el spritesheet: 'EMO_COMB.png:col:row'.
-  /// Vacío para emociones primarias y fusiones sin imagen individual.
-  final String hojaSprite;
-  /// Abreviatura de 3 letras para fusiones sin imagen. Vacío en primarias.
-  final String iniciales;
+  final bool esPrimaria;
+
+  final int frameCount;
+  final double stepTime;
+  final Vector2? textureSize;
 
   const EmocionData({
     required this.tipo,
@@ -28,8 +30,10 @@ class EmocionData {
     required this.descripcion,
     required this.pregunta,
     required this.imagen,
-    this.hojaSprite = '',
-    this.iniciales = '',
+    this.esPrimaria = false,
+    this.frameCount = 2,
+    this.stepTime = 0.4,
+    this.textureSize,
   });
 }
 
@@ -41,6 +45,7 @@ const List<EmocionData> catalogoEmociones = [
         'Una sensación de bienestar y satisfacción. Nos impulsa a conectar con otros y a repetir experiencias positivas.',
     pregunta: '¿Has sentido alegría o satisfacción recientemente?',
     imagen: 'alegria.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.tristeza,
@@ -49,6 +54,7 @@ const List<EmocionData> catalogoEmociones = [
         'Una respuesta natural ante la pérdida o la decepción. Nos invita a reflexionar y buscar apoyo.',
     pregunta: '¿Has sentido tristeza o melancolía últimamente?',
     imagen: 'tristeza.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.miedo,
@@ -57,6 +63,7 @@ const List<EmocionData> catalogoEmociones = [
         'Una señal de alerta ante algo percibido como amenaza. Nos prepara para protegernos.',
     pregunta: '¿Has sentido miedo o inseguridad recientemente?',
     imagen: 'miedo.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.ira,
@@ -65,6 +72,7 @@ const List<EmocionData> catalogoEmociones = [
         'Una reacción ante lo que percibimos como injusto o frustrante. Nos da energía para defendernos.',
     pregunta: '¿Has sentido enojo o irritación últimamente?',
     imagen: 'ira.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.sorpresa,
@@ -73,6 +81,7 @@ const List<EmocionData> catalogoEmociones = [
         'Una reacción breve ante algo inesperado. Nos ayuda a redirigir la atención rápidamente.',
     pregunta: '¿Algo te ha sorprendido o tomado por sorpresa recientemente?',
     imagen: 'sorpresa.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.aversion,
@@ -81,6 +90,7 @@ const List<EmocionData> catalogoEmociones = [
         'Un rechazo hacia algo que percibimos como dañino o desagradable. Nos protege de experiencias negativas.',
     pregunta: '¿Has sentido rechazo o aversión hacia algo o alguien?',
     imagen: 'aversion.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.anticipacion,
@@ -89,6 +99,7 @@ const List<EmocionData> catalogoEmociones = [
         'La energía que sentimos al esperar algo. Nos ayuda a prepararnos y planear hacia adelante.',
     pregunta: '¿Has sentido expectativa o anticipación por algo próximo?',
     imagen: 'anticipacion.png',
+    esPrimaria: true,
   ),
   EmocionData(
     tipo: TipoEmocion.aceptacion,
@@ -97,5 +108,6 @@ const List<EmocionData> catalogoEmociones = [
         'La capacidad de recibir la realidad tal como es. Nos da calma y apertura hacia los demás.',
     pregunta: '¿Has sentido calma o aceptación ante algo difícil?',
     imagen: 'aceptacion.png',
+    esPrimaria: true,
   ),
 ];

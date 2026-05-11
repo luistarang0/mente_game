@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flame/game.dart';
 import 'package:mapa_emocional/ui/hud.dart';
+import 'package:mapa_emocional/ui/info_burbuja.dart';
 import 'game/entidades/emocion_data.dart';
 import 'game/entidades/emocion_fusionada_data.dart';
 import 'game/mente_game.dart';
@@ -31,13 +32,14 @@ class _MenteAppState extends State<MenteApp> {
 
   EmocionData? _emocionActiva;
   EmocionFusionadaData? _fusionActiva;
+  EmocionData? _emocionSalaActiva;
+  Offset? _posicionBurbuja;
 
   // HUD: lista de EmocionData visible (primarias + secundarias)
   final List<EmocionData> _hudEmociones = [];
 
   // Sala de integración
   final List<EmocionFusionadaData> _fusionesDescubiertas = [];
-  bool _enSala = false;
 
   @override
   void initState() {
@@ -46,7 +48,24 @@ class _MenteAppState extends State<MenteApp> {
       onEmocionContacto: _mostrarPopupEmocion,
       onFusionDescubierta: _mostrarPopupFusion,
       onPuertaContacto: _entrarASala,
+      onEmocionSalaContacto: _mostrarInfoSala,
     );
+  }
+
+  void _mostrarInfoSala(EmocionData data, Vector2 posicionMundo) {
+    // Convierte coordenadas mundo → pantalla
+    final posPantalla = _game.camera.localToGlobal(posicionMundo);
+    setState(() {
+      _emocionSalaActiva = data;
+      _posicionBurbuja = Offset(posPantalla.x, posPantalla.y);
+    });
+  }
+
+  void _cerrarInfoSala() {
+    setState(() {
+      _emocionSalaActiva = null;
+      _posicionBurbuja = null;
+    });
   }
 
   // ── Popup de emoción primaria ─────────────────────────────────
@@ -100,7 +119,6 @@ class _MenteAppState extends State<MenteApp> {
     setState(() {
       _emocionActiva = null;
       _fusionActiva = null;
-      _enSala = true;
     });
     _game.irASala();
   }
@@ -121,6 +139,12 @@ class _MenteAppState extends State<MenteApp> {
               bottom: 10,
               child: HudEmociones(emociones: _hudEmociones),
             ),
+            if (_emocionSalaActiva != null && _posicionBurbuja != null)
+              InfoBurbuja(
+                data: _emocionSalaActiva!,
+                posicion: _posicionBurbuja!,
+                onCerrar: _cerrarInfoSala,
+              ),
             Positioned(
               right: 10,
               bottom: 10,
@@ -138,14 +162,6 @@ class _MenteAppState extends State<MenteApp> {
               FusionPopup(
                 fusion: _fusionActiva!,
                 onEntendido: _cerrarPopupFusion,
-              ),
-            if (_enSala)
-              SalaIntegracionScreen(
-                emociones: [
-                  ..._game.emocionesRecolectadas,
-                  ..._fusionesDescubiertas.map((f) => f.toEmocionData()),
-                ],
-                fusiones: _fusionesDescubiertas,
               ),
           ],
         ),

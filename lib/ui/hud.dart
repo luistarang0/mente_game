@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../game/entidades/emocion_data.dart';
-import 'spritesheet_cell.dart';
 
 class HudEmociones extends StatelessWidget {
   final List<EmocionData> emociones;
@@ -73,31 +72,24 @@ class _EmocionIcono extends StatelessWidget {
   }
 
   Widget _buildIcono() {
-    if (data.imagen.isNotEmpty) {
-      return Image.asset(
-        'assets/images/${data.imagen}',
-        filterQuality: FilterQuality.none,
-        fit: BoxFit.contain,
-      );
-    }
-    if (data.hojaSprite.isNotEmpty) {
-      return SpritesheetCell(hoja: data.hojaSprite, size: _size);
-    }
-    if (data.iniciales.isNotEmpty) {
-      return Container(
-        color: const Color(0xFF5a3d8a),
-        alignment: Alignment.center,
-        child: Text(
-          data.iniciales,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            letterSpacing: -0.5,
+    if (data.esPrimaria) {
+      return ClipRect(
+        child: Align(
+          alignment: Alignment.centerLeft,
+          widthFactor: 0.5,
+          child: Image.asset(
+            'assets/images/${data.imagen}',
+            filterQuality: FilterQuality.none,
+            fit: BoxFit.fitHeight,
           ),
         ),
       );
     }
-    return const Icon(Icons.auto_awesome, color: Color(0xFFc77dff), size: 20);
+
+    return Image.asset(
+      'assets/images/${data.imagen}',
+      filterQuality: FilterQuality.none,
+      fit: BoxFit.contain,
+    );
   }
 }

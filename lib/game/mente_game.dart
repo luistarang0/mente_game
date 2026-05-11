@@ -20,13 +20,6 @@ class _PrimarioRecolectado {
   _PrimarioRecolectado(this.tipo);
 }
 
-/// Estructura del mapa (en tiles, contando desde arriba):
-///   [0  – 7 )   Margen superior  (7 tiles)
-///   [7  – 28)   Zona 4           (21 tiles) ← se desbloquea la última
-///   [28 – 49)   Zona 3           (21 tiles)
-///   [49 – 70)   Zona 2           (21 tiles)
-///   [70 – 91)   Zona 1           (21 tiles) ← abierta al inicio
-///   [91 – 98)   Margen inferior  (7 tiles)
 ///
 /// El jugador empieza en el centro de la Zona 1 y va avanzando
 /// hacia arriba (Y decreciente) a medida que desbloquea zonas.
@@ -35,6 +28,7 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
   /// Llamado cuando dos primarias forman una fusión al ser recolectadas.
   final void Function(EmocionFusionadaData, List<TipoEmocion>) onFusionDescubierta;
+  final void Function(EmocionData data, Vector2 posicionMundo) onEmocionSalaContacto;
 
   /// Llamado cuando el jugador toca la puerta de integración.
   final VoidCallback onPuertaContacto;
@@ -43,6 +37,7 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
     required this.onEmocionContacto,
     required this.onFusionDescubierta,
     required this.onPuertaContacto,
+    required this.onEmocionSalaContacto,
   });
 
   // ── Entidades ────────────────────────────────────────────────
@@ -514,21 +509,29 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
   /// Coloca los items de emoción en una fila horizontal centrada en la sala.
   void _spawnEmocionesEnSala(TiledComponent sala, List<EmocionData> emociones) {
-    if (emociones.isEmpty) return;
+    final vistas = <TipoEmocion> {};
+    final primarias = emociones.where((e) {
+      if (!e.esPrimaria) return false;
+      if (vistas.contains(e.tipo)) return false;
+      vistas.add(e.tipo);
+      return true;
+    }).toList();
 
-    const itemAncho = 40.0; // sprite 32 + separación 8
+    if (primarias.isEmpty) return;
+
+    const itemAncho = 48.0;
     final salaAncho = sala.tileMap.map.width * 32.0;
     final salaAlto = sala.tileMap.map.height * 32.0;
 
-    final filaTotal = emociones.length * itemAncho;
+    final filaTotal = primarias.length * itemAncho;
     final startX = (salaAncho - filaTotal) / 2 + itemAncho / 2;
-    // Fila superior: aprox 1/4 del alto de la sala
-    final posY = salaAlto * 0.25;
+    final posY = salaAlto * 0.35;
 
-    for (int i = 0; i < emociones.length; i++) {
+    for (int i=0; i<primarias.length; i++) {
       world.add(EmocionSalaItem(
-        data: emociones[i],
-        posicion: Vector2(startX + i * itemAncho, posY),
+          data: primarias[i],
+          posicion: Vector2(startX + i * itemAncho, posY),
+          onContacto: onEmocionSalaContacto,
       ));
     }
   }

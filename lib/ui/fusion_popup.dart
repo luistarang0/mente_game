@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../game/entidades/emocion_fusionada_data.dart';
 
 class FusionPopup extends StatelessWidget {
@@ -27,10 +28,10 @@ class FusionPopup extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 '¡Fusión emocional!',
-                style: TextStyle(
-                  color: Color(0xFFe0aaff),
+                style: GoogleFonts.pixelifySans(
+                  color: const Color(0xFFe0aaff),
                   fontSize: 12,
                   letterSpacing: 2,
                 ),
@@ -38,7 +39,7 @@ class FusionPopup extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 fusion.nombre,
-                style: const TextStyle(
+                style: GoogleFonts.pixelifySans(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -49,20 +50,10 @@ class FusionPopup extends StatelessWidget {
               Text(
                 fusion.descripcion,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: GoogleFonts.pixelifySans(
                   color: Colors.white70,
                   fontSize: 14,
                   height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                fusion.pregunta,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFFc77dff),
-                  fontSize: 15,
-                  fontStyle: FontStyle.italic,
                 ),
               ),
               const SizedBox(height: 28),
@@ -74,10 +65,10 @@ class FusionPopup extends StatelessWidget {
                     color: const Color(0xFF7c5cbf),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Entendido',
-                      style: TextStyle(
+                      style: GoogleFonts.pixelifySans(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

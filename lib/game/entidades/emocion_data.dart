@@ -16,9 +16,11 @@ class EmocionData {
   final String nombre;
   final String descripcion;
   final String pregunta;
+
   /// Nombre del archivo en assets/images/ (vacío si no aplica).
   final String imagen;
   final bool esPrimaria;
+  final String funcion;
 
   final int frameCount;
   final double stepTime;
@@ -31,6 +33,7 @@ class EmocionData {
     required this.pregunta,
     required this.imagen,
     this.esPrimaria = false,
+    required this.funcion,
     this.frameCount = 2,
     this.stepTime = 0.4,
     this.textureSize,
@@ -46,6 +49,8 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido alegría o satisfacción recientemente?',
     imagen: 'alegria.png',
     esPrimaria: true,
+    funcion:
+        'Reconoce lo que vale la pena en tu vida y te impulsa a buscar mas de ello.',
   ),
   EmocionData(
     tipo: TipoEmocion.tristeza,
@@ -55,6 +60,8 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido tristeza o melancolía últimamente?',
     imagen: 'tristeza.png',
     esPrimaria: true,
+    funcion:
+        'Señala perdidas importantes y te invita a reflexionar o buscar apoyo.',
   ),
   EmocionData(
     tipo: TipoEmocion.miedo,
@@ -64,6 +71,8 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido miedo o inseguridad recientemente?',
     imagen: 'miedo.png',
     esPrimaria: true,
+    funcion:
+        'Detecta amenazas reales o percibidas y te prepara para protegerte.',
   ),
   EmocionData(
     tipo: TipoEmocion.ira,
@@ -73,6 +82,7 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido enojo o irritación últimamente?',
     imagen: 'ira.png',
     esPrimaria: true,
+    funcion: 'Marca tus limites y te da energia para defenderlos.',
   ),
   EmocionData(
     tipo: TipoEmocion.sorpresa,
@@ -82,6 +92,8 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Algo te ha sorprendido o tomado por sorpresa recientemente?',
     imagen: 'sorpresa.png',
     esPrimaria: true,
+    funcion:
+        'Redirige tu atencion hacia lo nuevo e inesperado para que puedas adaptarte.',
   ),
   EmocionData(
     tipo: TipoEmocion.aversion,
@@ -91,6 +103,8 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido rechazo o aversión hacia algo o alguien?',
     imagen: 'aversion.png',
     esPrimaria: true,
+    funcion:
+        'Te aleja de lo que percibe como dañino o contrario a tus valores.',
   ),
   EmocionData(
     tipo: TipoEmocion.anticipacion,
@@ -100,6 +114,8 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido expectativa o anticipación por algo próximo?',
     imagen: 'anticipacion.png',
     esPrimaria: true,
+    funcion:
+        'Te impulsa a planear y actuar antes de que ocurra algo importante.',
   ),
   EmocionData(
     tipo: TipoEmocion.aceptacion,
@@ -109,5 +125,7 @@ const List<EmocionData> catalogoEmociones = [
     pregunta: '¿Has sentido calma o aceptación ante algo difícil?',
     imagen: 'aceptacion.png',
     esPrimaria: true,
+    funcion:
+        'Te permite recibir la realidad con calma y abrirte a lo que viene.',
   ),
 ];

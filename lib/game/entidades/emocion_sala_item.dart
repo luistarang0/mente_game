@@ -1,25 +1,30 @@
-import 'package:flame/collisions.dart';
 import 'package:flutter/painting.dart';
 import 'package:flame/components.dart';
+import 'package:flame/collisions.dart';
 import '../entidades/emocion_data.dart';
 
-/// Elemento visual de la sala de integración.
-/// Muestra el sprite de la emoción (o placeholder según el tipo)
-/// y su nombre centrado debajo. Sin colisión.
-class EmocionSalaItem extends SpriteAnimationComponent with HasGameReference, CollisionCallbacks {
+class EmocionSalaItem extends SpriteAnimationComponent
+    with HasGameReference, CollisionCallbacks {
   final EmocionData data;
-  final void Function(EmocionData, Vector2 posicionMundo) onContacto;
+  final bool recolectada;
 
-  bool _contactoEmitido = false;
+  /// Solo se llama si [recolectada] es true.
+  final void Function(EmocionData, Vector2 posicionMundo)? onEntrada;
+  final VoidCallback? onSalida;
 
   static const double _tamSprite = 32.0;
 
-  EmocionSalaItem({required this.data, required Vector2 posicion, required this.onContacto})
-      : super(
-          position: posicion,
-          size: Vector2.all(_tamSprite),
-          anchor: Anchor.center,
-        );
+  EmocionSalaItem({
+    required this.data,
+    required Vector2 posicion,
+    required this.recolectada,
+    this.onEntrada,
+    this.onSalida,
+  }) : super(
+         position: posicion,
+         size: Vector2.all(_tamSprite),
+         anchor: Anchor.center,
+       );
 
   @override
   Future<void> onLoad() async {
@@ -27,27 +32,70 @@ class EmocionSalaItem extends SpriteAnimationComponent with HasGameReference, Co
 
     final sheet = await game.images.load(data.imagen);
     animation = SpriteAnimation.fromFrameData(
-        sheet,
-        SpriteAnimationData.sequenced(
-            amount: data.frameCount,
-            stepTime: data.stepTime,
-            textureSize: data.textureSize ?? Vector2.all(32)
-        ),
+      sheet,
+      SpriteAnimationData.sequenced(
+        amount: data.frameCount,
+        stepTime: data.stepTime,
+        textureSize: data.textureSize ?? Vector2.all(32),
+      ),
     );
 
-    add (CircleHitbox(radius: 14, anchor: Anchor.center, position: size / 2));
-  }
+    // Apagada si no fue recolectada
+    if (!recolectada) {
+      paint.colorFilter = const ColorFilter.matrix([
+        0.2126,
+        0.7152,
+        0.0722,
+        0,
+        0,
+        0.2126,
+        0.7152,
+        0.0722,
+        0,
+        0,
+        0.2126,
+        0.7152,
+        0.0722,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+      ]);
+      paint.color = paint.color.withValues(alpha: 0.4);
+    }
 
-  @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-    if (!_contactoEmitido && other.runtimeType.toString() == 'Fantasmita') {
-      _contactoEmitido = true;
-      onContacto(data, position);
+    // Solo las recolectadas tienen hitbox
+    if (recolectada) {
+      add(
+        CircleHitbox(
+          radius: 18,
+          anchor: Anchor.center,
+          position: size / 2,
+          isSolid: true,
+        ),
+      );
     }
   }
 
-  void resetearContacto() {
-    _contactoEmitido = false;
+  @override
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
+    super.onCollisionStart(intersectionPoints, other);
+    if (other.runtimeType.toString() == 'Fantasmita') {
+      onEntrada?.call(data, position);
+    }
+  }
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    super.onCollisionEnd(other);
+    if (other.runtimeType.toString() == 'Fantasmita') {
+      onSalida?.call();
+    }
   }
 }

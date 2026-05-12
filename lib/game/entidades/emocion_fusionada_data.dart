@@ -26,19 +26,19 @@ class EmocionFusionadaData {
 
   /// Convierte esta fusión en un [EmocionData] para el HUD y la sala.
   EmocionData toEmocionData() => EmocionData(
-        tipo: componente1,
-        nombre: nombre,
-        descripcion: descripcion,
-        pregunta: pregunta,
-        imagen: '',
-        esPrimaria: false,
-        frameCount: 1,
-        stepTime: 1.0,
-      );
+    tipo: componente1,
+    nombre: nombre,
+    descripcion: descripcion,
+    pregunta: pregunta,
+    imagen: imagen,
+    esPrimaria: false,
+    funcion: '',
+    frameCount: 1,
+    stepTime: 1.0,
+  );
 }
 
 const List<EmocionFusionadaData> catalogoFusiones = [
-  // ── Con sprite (fila 0) ──────────────────────────────────────
   EmocionFusionadaData(
     nombre: 'Ansiedad',
     descripcion:
@@ -90,7 +90,6 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     imagen: 'catarsis.png',
   ),
 
-  // ── Con sprite (fila 1) ──────────────────────────────────────
   EmocionFusionadaData(
     nombre: 'Vergüenza',
     descripcion:
@@ -116,7 +115,8 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     descripcion:
         'La mezcla de ira y anticipación. Una energía intensa orientada '
         'a la acción impulsiva.',
-    pregunta: '¿Has sentido impulsos agresivos o ganas de reaccionar con fuerza?',
+    pregunta:
+        '¿Has sentido impulsos agresivos o ganas de reaccionar con fuerza?',
     componente1: TipoEmocion.ira,
     componente2: TipoEmocion.anticipacion,
     imagen: 'agresividad.png',
@@ -142,7 +142,6 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     imagen: 'optimismo.png',
   ),
 
-  // ── Sin sprite (18 nuevas) ───────────────────────────────────
   EmocionFusionadaData(
     nombre: 'Alarma',
     descripcion:
@@ -178,7 +177,8 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     descripcion:
         'La tristeza ante algo que no salió como esperábamos. '
         'Una sorpresa que resultó negativa.',
-    pregunta: '¿Te has sentido decepcionado/a por algo o alguien recientemente?',
+    pregunta:
+        '¿Te has sentido decepcionado/a por algo o alguien recientemente?',
     componente1: TipoEmocion.tristeza,
     componente2: TipoEmocion.sorpresa,
     imagen: 'decepcion.png',
@@ -208,7 +208,8 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     descripcion:
         'La anticipación teñida de rechazo. Una actitud de desconfianza '
         'hacia las intenciones ajenas.',
-    pregunta: '¿Has tenido pensamientos cínicos o de desconfianza recientemente?',
+    pregunta:
+        '¿Has tenido pensamientos cínicos o de desconfianza recientemente?',
     componente1: TipoEmocion.anticipacion,
     componente2: TipoEmocion.aversion,
     imagen: 'cinismo.png',
@@ -228,7 +229,8 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     descripcion:
         'La aceptación mezclada con temor. Una tendencia a ceder ante '
         'los demás para evitar conflictos.',
-    pregunta: '¿Te has sentido sumiso/a o has cedido por miedo en alguna situación?',
+    pregunta:
+        '¿Te has sentido sumiso/a o has cedido por miedo en alguna situación?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.miedo,
     imagen: 'sumision.png',
@@ -258,7 +260,8 @@ const List<EmocionFusionadaData> catalogoFusiones = [
     descripcion:
         'La apertura combinada con previsión. La capacidad de leer '
         'situaciones y anticiparse con claridad.',
-    pregunta: '¿Has sentido que comprendes bien una situación y sabes cómo actuar?',
+    pregunta:
+        '¿Has sentido que comprendes bien una situación y sabes cómo actuar?',
     componente1: TipoEmocion.aceptacion,
     componente2: TipoEmocion.anticipacion,
     imagen: 'sagacidad.png',

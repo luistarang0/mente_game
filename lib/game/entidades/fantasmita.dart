@@ -17,6 +17,8 @@ class Fantasmita extends SpriteAnimationComponent
   Future<void> onLoad() async {
     await super.onLoad();
 
+    priority = 10;
+
     // Cargar el spritesheet
     final spriteSheet = await gameRef.images.load('fantasmita.png');
 

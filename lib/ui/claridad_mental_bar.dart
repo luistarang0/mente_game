@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ClaridadMentalBar extends StatelessWidget {
   final int interactuadas;
@@ -30,17 +31,17 @@ class ClaridadMentalBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Claridad mental',
-                style: TextStyle(
-                  color: Color(0xFFc77dff),
+                style: GoogleFonts.pixelifySans(
+                  color: const Color(0xFFc77dff),
                   fontSize: 10,
                   letterSpacing: 0.5,
                 ),
               ),
               Text(
                 '$pct%',
-                style: const TextStyle(
+                style: GoogleFonts.pixelifySans(
                   color: Colors.white,
                   fontSize: 11,
                   fontWeight: FontWeight.bold,

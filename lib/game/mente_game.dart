@@ -11,6 +11,8 @@ import 'package:mapa_emocional/game/mapa/capa_nubes.dart';
 import 'package:mapa_emocional/game/entidades/puerta_integracion.dart';
 import 'package:mapa_emocional/game/entidades/emocion_sala_item.dart';
 
+import 'entidades/libro.dart';
+
 /// Entrada del historial de emociones primarias recolectadas.
 /// [usadoEnFusion] se activa cuando esta instancia concreta participa
 /// en una fusión; no impide que el mismo tipo aparezca de nuevo.
@@ -25,10 +27,15 @@ class _PrimarioRecolectado {
 /// hacia arriba (Y decreciente) a medida que desbloquea zonas.
 class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
   final void Function(EmocionData) onEmocionContacto;
+  final VoidCallback onEmocionSalaSalida;
 
   /// Llamado cuando dos primarias forman una fusión al ser recolectadas.
-  final void Function(EmocionFusionadaData, List<TipoEmocion>) onFusionDescubierta;
-  final void Function(EmocionData data, Vector2 posicionMundo) onEmocionSalaContacto;
+  final void Function(EmocionFusionadaData, List<TipoEmocion>)
+  onFusionDescubierta;
+  final void Function(EmocionData data, Vector2 posicionMundo)
+  onEmocionSalaContacto;
+  final VoidCallback onLibroContacto;
+  EmocionSalaItem? _itemSalaActivo;
 
   /// Llamado cuando el jugador toca la puerta de integración.
   final VoidCallback onPuertaContacto;
@@ -38,6 +45,8 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
     required this.onFusionDescubierta,
     required this.onPuertaContacto,
     required this.onEmocionSalaContacto,
+    required this.onEmocionSalaSalida,
+    required this.onLibroContacto,
   });
 
   // ── Entidades ────────────────────────────────────────────────
@@ -64,6 +73,7 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
   // ── Colección ────────────────────────────────────────────────
   final List<EmocionData> emocionesRecolectadas = [];
+
   /// Interacciones totales (Sí + No). Base del % de claridad mental.
   int emocionesInteractuadas = 0;
 
@@ -72,8 +82,10 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
   /// Cada entrada se marca como [usada] cuando participa en una fusión,
   /// pero la emoción sigue en el historial y puede combinarse con otras.
   final List<_PrimarioRecolectado> _historialPrimarias = [];
+
   /// Pares ya fusionados: clave canónica "a-b". Evita repetir la misma fusión.
   final Set<String> _fusionesRealizadas = {};
+
   /// Flag: popup de fusión abierto. Mantiene el juego pausado.
   bool _fusionPendiente = false;
 
@@ -84,8 +96,11 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
   // ── Puerta de integración ─────────────────────────────────────
   bool _puertaMostrada = false;
+
   /// True cuando ya se cargó la sala final. Desactiva toda la lógica del mapa principal.
   bool _enSala = false;
+
+  bool _libroActivo = false;
 
   // ════════════════════════════════════════════════════════════
   //  CICLO DE VIDA
@@ -124,6 +139,8 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
     if (!_enSala) {
       _verificarProximidadEmociones();
+    } else {
+      _verificarProximidadSala();
     }
 
     final pos = camera.viewfinder.position;
@@ -248,17 +265,18 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
     final W = _mapa.tileMap.map.width;
 
     if (zona == 1) {
-      final pool = catalogoEmociones
-          .where((e) => _tiposZona1.contains(e.tipo))
-          .toList()
-        ..shuffle(random);
+      final pool =
+          catalogoEmociones.where((e) => _tiposZona1.contains(e.tipo)).toList()
+            ..shuffle(random);
       for (final data in pool.sublist(0, _emocionsPorZona)) {
         _tiposSpawneadosEnZona1.add(data.tipo);
-        world.add(Emocion(
-          data: data,
-          posicion: _posicionAleatEnZona(zona, random, H, W),
-          onContacto: _alTocarEmocion,
-        ));
+        world.add(
+          Emocion(
+            data: data,
+            posicion: _posicionAleatEnZona(zona, random, H, W),
+            onContacto: _alTocarEmocion,
+          ),
+        );
       }
       return;
     }
@@ -272,34 +290,41 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
         orElse: () => _tiposZona1[random.nextInt(_tiposZona1.length)],
       );
       final data = catalogoEmociones.firstWhere((e) => e.tipo == faltante);
-      world.add(Emocion(
-        data: data,
-        posicion: _posicionAleatEnZona(zona, random, H, W),
-        onContacto: _alTocarEmocion,
-      ));
+      world.add(
+        Emocion(
+          data: data,
+          posicion: _posicionAleatEnZona(zona, random, H, W),
+          onContacto: _alTocarEmocion,
+        ),
+      );
       slotsRestantes--;
     }
 
     if (zona == 3) {
       // Alegría garantizada en slot 1
-      final alegria =
-          catalogoEmociones.firstWhere((e) => e.tipo == TipoEmocion.alegria);
-      world.add(Emocion(
-        data: alegria,
-        posicion: _posicionAleatEnZona(zona, random, H, W),
-        onContacto: _alTocarEmocion,
-      ));
+      final alegria = catalogoEmociones.firstWhere(
+        (e) => e.tipo == TipoEmocion.alegria,
+      );
+      world.add(
+        Emocion(
+          data: alegria,
+          posicion: _posicionAleatEnZona(zona, random, H, W),
+          onContacto: _alTocarEmocion,
+        ),
+      );
       slotsRestantes--;
     }
 
     // Slots restantes: cualquier primaria del catálogo al azar
     final pool = List<EmocionData>.from(catalogoEmociones)..shuffle(random);
     for (final data in pool.take(slotsRestantes)) {
-      world.add(Emocion(
-        data: data,
-        posicion: _posicionAleatEnZona(zona, random, H, W),
-        onContacto: _alTocarEmocion,
-      ));
+      world.add(
+        Emocion(
+          data: data,
+          posicion: _posicionAleatEnZona(zona, random, H, W),
+          onContacto: _alTocarEmocion,
+        ),
+      );
     }
   }
 
@@ -319,8 +344,7 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
         minY + random.nextDouble() * (maxY - minY),
       );
       intentos++;
-    } while (
-        _esAgua((pos.x / 32).floor(), (pos.y / 32).floor()) &&
+    } while (_esAgua((pos.x / 32).floor(), (pos.y / 32).floor()) &&
         intentos < 100);
     return pos;
   }
@@ -338,6 +362,47 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
           break;
         }
       }
+    }
+  }
+
+  void _verificarProximidadSala() {
+    EmocionSalaItem? itemCercano;
+
+    for (final child in world.children) {
+      if (child is EmocionSalaItem && child.recolectada) {
+        if (_fantasmita.position.distanceTo(child.position) < 28) {
+          itemCercano = child;
+          break;
+        }
+      }
+    }
+
+    if (itemCercano != null && itemCercano != _itemSalaActivo) {
+      _itemSalaActivo = itemCercano;
+      // Hay una emoción cerca — avisar si no es la que ya está activa
+      onEmocionSalaContacto(itemCercano.data, itemCercano.position);
+    } else if (itemCercano == null && _itemSalaActivo != null) {
+      _itemSalaActivo = null;
+      // No hay ninguna cerca — cerrar burbuja si estaba abierta
+      onEmocionSalaSalida();
+    }
+
+    // ── Libro ────────────────────────────────────────────────────
+    bool libroEnRango = false;
+    for (final child in world.children) {
+      if (child is Libro) {
+        if (_fantasmita.position.distanceTo(child.position) < 28) {
+          libroEnRango = true;
+          break;
+        }
+      }
+    }
+
+    if (libroEnRango && !_libroActivo) {
+      _libroActivo = true;
+      onLibroContacto();
+    } else if (!libroEnRango && _libroActivo) {
+      _libroActivo = false;
     }
   }
 
@@ -381,10 +446,12 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
     const tileSize = 32.0;
     final px = _fantasmita.position.x;
     final py = _fantasmita.position.y - 5 * tileSize;
-    world.add(PuertaIntegracion(
-      posicion: Vector2(px, py),
-      onContacto: onPuertaContacto,
-    ));
+    world.add(
+      PuertaIntegracion(
+        posicion: Vector2(px, py),
+        onContacto: onPuertaContacto,
+      ),
+    );
   }
 
   // ════════════════════════════════════════════════════════════
@@ -501,6 +568,7 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
     // Mostrar emociones recolectadas en fila horizontal
     _spawnEmocionesEnSala(sala, emocionesRecolectadas);
+    _spawnLibro(sala);
 
     camera.viewfinder.zoom = 2.0;
     camera.follow(_fantasmita);
@@ -509,31 +577,50 @@ class MenteGame extends FlameGame with DragCallbacks, HasCollisionDetection {
 
   /// Coloca los items de emoción en una fila horizontal centrada en la sala.
   void _spawnEmocionesEnSala(TiledComponent sala, List<EmocionData> emociones) {
-    final vistas = <TipoEmocion> {};
-    final primarias = emociones.where((e) {
-      if (!e.esPrimaria) return false;
-      if (vistas.contains(e.tipo)) return false;
-      vistas.add(e.tipo);
-      return true;
-    }).toList();
+    // Tipos efectivamente recolectados
+    final recolectados = emociones
+        .where((e) => e.esPrimaria)
+        .map((e) => e.tipo)
+        .toSet();
 
-    if (primarias.isEmpty) return;
+    // Siempre las 8 primarias del catálogo, en orden
+    final todasPrimarias = catalogoEmociones
+        .where((e) => e.esPrimaria)
+        .toList();
 
     const itemAncho = 48.0;
     final salaAncho = sala.tileMap.map.width * 32.0;
     final salaAlto = sala.tileMap.map.height * 32.0;
 
-    final filaTotal = primarias.length * itemAncho;
+    final filaTotal = todasPrimarias.length * itemAncho;
     final startX = (salaAncho - filaTotal) / 2 + itemAncho / 2;
     final posY = salaAlto * 0.35;
 
-    for (int i=0; i<primarias.length; i++) {
-      world.add(EmocionSalaItem(
-          data: primarias[i],
+    for (int i = 0; i < todasPrimarias.length; i++) {
+      final data = todasPrimarias[i];
+      final fueRecolectada = recolectados.contains(data.tipo);
+
+      world.add(
+        EmocionSalaItem(
+          data: data,
           posicion: Vector2(startX + i * itemAncho, posY),
-          onContacto: onEmocionSalaContacto,
-      ));
+          recolectada: fueRecolectada,
+          onEntrada: fueRecolectada ? onEmocionSalaContacto : null,
+          onSalida: fueRecolectada ? onEmocionSalaSalida : null,
+        ),
+      );
     }
+  }
+
+  void _spawnLibro(TiledComponent sala) {
+    final centroX = sala.tileMap.map.width * 32.0 / 2;
+    final spawmY = sala.tileMap.map.height * 32.0 / 2;
+    world.add(
+      Libro(
+        posicion: Vector2(centroX, spawmY + 88), // 2 tiles abajo del spawn
+        onContacto: onLibroContacto,
+      ),
+    );
   }
 
   // ════════════════════════════════════════════════════════════

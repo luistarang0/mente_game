@@ -47,6 +47,27 @@ class FusionPopup extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white10,
+                  border: Border.all(
+                    color: const Color(0xFF7c5cbf).withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(9),
+                  child:  Image.asset(
+                    'assets/images/${fusion.imagen}',
+                    filterQuality: FilterQuality.none,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               Text(
                 fusion.descripcion,
                 textAlign: TextAlign.center,
